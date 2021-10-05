@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hash_algorithm.Services;
+using System;
 
 namespace Blockchain
 {
@@ -6,7 +7,7 @@ namespace Blockchain
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            HashService hashingService = new HashService();
         }
     }
 }
