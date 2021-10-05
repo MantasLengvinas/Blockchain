@@ -10,6 +10,7 @@ namespace Blockchain.Models
     {
         public string Name { get; set; }
         public string PublicKey { get; set; }
+        public double Balance { get; set; }
 
     }
 }
