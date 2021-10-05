@@ -25,16 +25,15 @@ namespace Blockchain.Services
                 {
                     Name = RandomStringGenerator(r.Next(20)),
                     PublicKey = HashingService.Hash(RandomStringGenerator(r.Next(500) + 1)),
-                    Balance = r.NextDouble() * (1000000 - 100) + 100
+                    Balance = Math.Round(r.NextDouble() * (1000000 - 100) + 100, 2)
                 });
             }
 
             for (int i = 0; i < n * 10; i++)
             {
-                transactions.Add(new Transaction() { 
+                transactions.Add(new Transaction(r.NextDouble() * (Math.Abs(r.Next(1000) - r.Next(1000))) + r.Next(100)) { 
                     Sender = users[r.Next(n)].PublicKey,
-                    Receiver = users[r.Next(n)].PublicKey,
-                    Amount = r.NextDouble() * (Math.Abs(r.Next(1000) - r.Next(1000))) + r.Next(100)
+                    Receiver = users[r.Next(n)].PublicKey
                 });
             }
 
