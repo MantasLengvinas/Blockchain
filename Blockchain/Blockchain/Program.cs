@@ -3,6 +3,7 @@ using Blockchain.Services;
 using Hash_algorithm.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Blockchain
@@ -10,16 +11,26 @@ namespace Blockchain
     class Program
     {
 
-        //if (Mantas kutena && neklauso && nevalgo) 
-        //    mantas.MiegotiAntZemes()
-        //else
-        //    continue;
-
         static void Main(string[] args)
         {
             Random r = new Random();
             HashService hashService = new HashService();
             DataService dataService = new DataService();
+
+            //Empty filess
+
+            if (!Directory.Exists(AppContext.BaseDirectory + @"Results\"))
+            {
+                Directory.CreateDirectory(AppContext.BaseDirectory + @"Results\");
+            }
+            if (File.Exists(AppContext.BaseDirectory + @"Results\Transactions.txt"))
+            {
+                File.Delete(AppContext.BaseDirectory + @"Results\Transactions.txt");
+            }
+            if (File.Exists(AppContext.BaseDirectory + @"Results\Blocks.txt"))
+            {
+                File.Delete(AppContext.BaseDirectory + @"Results\Blocks.txt");
+            }
 
             GeneratedData data = dataService.GenerateData(1000);
             List<Block> blocks = new List<Block>();
@@ -53,7 +64,7 @@ namespace Blockchain
                         count = data.Transactions.Count;
                     }
 
-                    candidates.Add(new Block(previousHash, DateTime.Now, "1", 1, data.Transactions.GetRange(0, count)));
+                    candidates.Add(new Block(previousHash, DateTime.Now, "1", 2, data.Transactions.GetRange(0, count)));
                 }
 
                 Block minedBlock = new Block();
@@ -75,6 +86,7 @@ namespace Blockchain
 
                 if (minedBlock.Mined)
                 {
+                    Console.WriteLine("Block mined!");
                     List<string> transactions = new List<string>();
                     List<string> failedTransactions = new List<string>();
 
@@ -96,7 +108,9 @@ namespace Blockchain
 
                             if (transactionSuccess)
                             {
-                                Console.WriteLine($"#{transactionCount} Sender: {data.Users[sender].PublicKey} Receiver: {data.Users[receiver].PublicKey} Amount: {t.Amount}");
+                                
+                                File.AppendAllText(AppContext.BaseDirectory + @"Results\Transactions.txt", $"#{transactionCount} Sender: {data.Users[sender].PublicKey} Receiver: {data.Users[receiver].PublicKey} Amount: {t.Amount} \n");
+
                                 transactionCount++;
                             }
                         }
@@ -114,11 +128,13 @@ namespace Blockchain
 
                     }
                 }
-                if(transactionCount != 1)
-                {
-                    blocks.Add(minedBlock);
-                }
+                transactionCount--;
+                blocks.Add(minedBlock);
+
+                File.AppendAllText(AppContext.BaseDirectory + @"Results\Blocks.txt", $"Hash: {minedBlock.Hash} \nPrevious hash: {minedBlock.PreviousHash} \nTimestamp: {minedBlock.TimeStamp} \nHeight: {blocks.Count} \nNumber of transactions: {minedBlock.Transactions.Count} \nDifficulty: {minedBlock.Difficulty}: \nMerkle root: {minedBlock.MerkleHash} \nVersion: {minedBlock.Version} \nNonce: {minedBlock.Nonce} \n\n");
             }
+
+            Console.WriteLine("Transaction information is saved in Transactions.txt, Mined blocks information is saved in Blocks.txt");
 
         }
     }
