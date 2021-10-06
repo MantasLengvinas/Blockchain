@@ -12,42 +12,34 @@ namespace Hash_algorithm.Services
     {
         public string Hash(string input)
         {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
             string hash = "";
             char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
             UInt64 sum = 0;
 
-            char prev = input[0];
-
             foreach(char c in input)
             {
-                UInt64 Cint64 = Convert.ToUInt32(c);
-                Cint64 = BitOperations.RotateLeft(Cint64, 9845320 * Convert.ToInt32(c));
-                Cint64 = Cint64 ^ c ^ prev;
+                UInt64 inputValue = Convert.ToUInt32(c);
+                inputValue = BitOperations.RotateRight(inputValue, 70403 * Convert.ToInt32(c));
+                inputValue = c ^ ~inputValue ^ c;
 
-                sum += Cint64 - BitOperations.RotateRight((UInt64)prev, 4056840 * Convert.ToInt32(c));
-                sum = BitOperations.RotateLeft(sum, 5788480 * Convert.ToInt32(prev));
-                prev = c;
-
+                sum += inputValue - BitOperations.RotateLeft((UInt64)c, 30509 * Convert.ToInt32(c));
+                sum = BitOperations.RotateLeft(sum, 309967 * Convert.ToInt32(c));
             }
 
             char[] sumInChars = sum.ToString().ToCharArray();
 
             for (int i = 0; i < 64; i++)
             {
-                int salt;
+                int index;
 
                 if (sumInChars.Length > i)
-                    salt = sumInChars[i] + i * 9845320;
-                else salt = sumInChars[i % sumInChars.Length] + i * 4056840;
+                    index = sumInChars[i] + (i + 1) * 30509;
+                else index = sumInChars[i % sumInChars.Length] + (i + 1) * 70403;
 
-                if (salt >= hexChars.Length)
-                    salt = salt % hexChars.Length;
+                if (index + i >= hexChars.Length)
+                    index %= hexChars.Length;
 
-                if (i != 0)
-                    hash += hexChars[salt];
-                else hash += hexChars[1];
+                hash += hexChars[index];
             }
 
             return hash;

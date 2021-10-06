@@ -22,6 +22,9 @@ namespace Blockchain.Models
         public bool Transacted { get; set; } = false;
         public List<Transaction> Transactions { get; set; }
 
+        // For empty initializiation
+        public Block() { }
+
         public Block(string previousHash, DateTime timeStamp, string version, int difficulty, List<Transaction> transactions)
         {
             PreviousHash = previousHash;
@@ -61,6 +64,31 @@ namespace Blockchain.Models
             }
 
             return CreateMerkleHash(merkle);
+        }
+
+        public void Mine()
+        {
+            int nonce = 0;
+            string guessHash = HashService.Hash(HashService.Hash(PreviousHash + TimeStamp + Version + MerkleHash) + nonce);
+
+            StringBuilder rebuildHash = new StringBuilder(Hash);
+            for (int i = 0; i < Difficulty; i++)
+                rebuildHash[i] = '0';
+            string rebuildedHash = rebuildHash.ToString();
+
+            while (!Mined)
+            {
+                if (guessHash.CompareTo(rebuildedHash) > 0)
+                {
+                    nonce++;
+                    guessHash = HashService.Hash(HashService.Hash(PreviousHash + TimeStamp + Version + MerkleHash) + nonce);
+                }
+                else
+                {
+                    Mined = true;
+                    Nonce = nonce;
+                }
+            }
         }
     }
 }

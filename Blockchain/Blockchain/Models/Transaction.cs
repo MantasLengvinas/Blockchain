@@ -16,11 +16,13 @@ namespace Blockchain.Models
         public string Receiver { get; set; }
         public double Amount { get; set; }
 
-        public Transaction(double amount)
+        public Transaction(string sender, string receiver, double amount)
         {
+            Sender = sender;
+            Receiver = receiver;
             Amount = amount;
 
-            TransactionID = HashingService.Hash(Amount.ToString());
+            TransactionID = HashingService.Hash(sender + receiver + amount.ToString());
         }
     }
 }

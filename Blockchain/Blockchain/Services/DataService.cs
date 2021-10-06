@@ -31,10 +31,7 @@ namespace Blockchain.Services
 
             for (int i = 0; i < n * 10; i++)
             {
-                transactions.Add(new Transaction(r.NextDouble() * (Math.Abs(r.Next(1000) - r.Next(1000))) + r.Next(100)) { 
-                    Sender = users[r.Next(n)].PublicKey,
-                    Receiver = users[r.Next(n)].PublicKey
-                });
+                transactions.Add(new Transaction(users[r.Next(n)].PublicKey, users[r.Next(n)].PublicKey, r.NextDouble() * (Math.Abs(r.Next(1000) - r.Next(1000))) + r.Next(100)));
             }
 
             return new GeneratedData() { 
