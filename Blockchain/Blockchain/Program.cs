@@ -64,7 +64,7 @@ namespace Blockchain
                         count = data.Transactions.Count;
                     }
 
-                    candidates.Add(new Block(previousHash, DateTime.Now, "1", 2, data.Transactions.GetRange(0, count)));
+                    candidates.Add(new Block(previousHash, DateTime.Now, "1", 1, data.Transactions.GetRange(0, count)));
                 }
 
                 Block minedBlock = new Block();
